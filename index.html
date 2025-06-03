@@ -32,6 +32,12 @@
       margin-top: 1rem;
       padding: 1rem;
       border-radius: 8px;
+      list-style: none;
+      padding-left: 0;
+    }
+    #ideasList li {
+      padding: 6px 0;
+      border-bottom: 1px solid #ddd;
     }
   </style>
 </head>
@@ -53,16 +59,12 @@
   </div>
 
   <h3 style="margin-top:2rem;">📋 Indsendte idéer</h3>
-<ul id="ideasList"><li>Ingen idéer endnu.</li></ul>
-
+  <ul id="ideasList">
+    <li>Ingen idéer endnu.</li>
+  </ul>
 
   <script>
-    function checkPrompt() {
-      const input = document.getElementById('promptInput').value.toLowerCase();
-      const resultBox = document.getElementById('result');
-      let level = 'green';
-      let message = '✅ OK (ingen risiko)';
-
+    function classify(text) {
       const redPattern = /\b(\d{6}[-\s]?\d{4})\b|\bcpr\b|\bssn\b|\bsocial security\b|\bpersonnummer\b|\bdni\b|\bn[úu]mero de identidad\b/i;
       const yellowWords = [
         "sygdom", "afskedigelse", "diskrimination", "løn", "illness",
@@ -70,28 +72,51 @@
         "sygedagpenge", "fyring", "konflikt", "klage", "sag", "retsag"
       ];
 
-      if (redPattern.test(input)) {
-        level = 'red';
-        message = '❌ Følsomt indhold (høj risiko)';
-      } else if (yellowWords.some(word => input.includes(word))) {
-        level = 'yellow';
-        message = '⚠️ Vær opmærksom (middel risiko)';
-      }
-
-      resultBox.className = level;
-      resultBox.innerHTML = `<strong>${message}</strong>`;
-      resultBox.style.display = 'block';
+      if (redPattern.test(text)) return "red";
+      if (yellowWords.some(w => text.toLowerCase().includes(w))) return "yellow";
+      if (text.trim().length > 0) return "green";
+      return "unknown";
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const ideasURL = "https://jatom-tech.github.io/AIAmigo-playground/ideas.json";
+      fetch(ideasURL)
+        .then(res => res.json())
+        .then(ideas => {
+          const list = document.getElementById("ideasList");
+          list.innerHTML = "";
+          ideas.forEach(idea => {
+            const li = document.createElement("li");
+            li.textContent = idea.text;
+            list.appendChild(li);
+          });
+        })
+        .catch(() => {
+          document.getElementById("ideasList").innerHTML = "<li>(Ingen idéer tilgængelige)</li>";
+        });
+
+      document.getElementById('checkButton').addEventListener('click', () => {
+        const prompt = document.getElementById('promptInput').value;
+        const status = classify(prompt);
+
+        let output = "";
+        if (status === "red") output = "❌ Følsomt indhold (høj risiko)";
+        else if (status === "yellow") output = "⚠️ Vær opmærksom (middel risiko)";
+        else if (status === "green") output = "✅ OK (ingen risiko)";
+        else output = "⚠️ Ukendt (kan ikke klassificeres)";
+
+        document.getElementById('result').innerHTML = `<strong>${output}</strong>`;
+        document.getElementById('result').className = status;
+        document.getElementById('result').style.display = 'block';
+      });
+    });
 
     function submitIdea() {
       const idea = document.getElementById('userIdea').value.trim();
       const ideasList = document.getElementById('ideasList');
       if (idea) {
         document.getElementById('ideaFeedback').style.display = 'block';
-        const newIdea = document.createElement('div');
-        newIdea.style.marginTop = "8px";
-        newIdea.style.padding = "8px";
-        newIdea.style.borderBottom = "1px solid #ddd";
+        const newIdea = document.createElement('li');
         newIdea.textContent = "💬 " + idea;
         ideasList.appendChild(newIdea);
         document.getElementById('userIdea').value = '';
