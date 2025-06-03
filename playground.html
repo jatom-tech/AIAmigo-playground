@@ -2,15 +2,21 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>AIAmigoLite Playground</title>
 </head>
 <body style="font-family:sans-serif; max-width:600px; margin:40px auto;">
   <h2>Test en prompt og se hvordan AIAmigo vurderer risikoen.</h2>
   <textarea id="promptInput" rows="4" style="width:100%;"></textarea>
   <button id="checkButton" style="margin-top:10px;">Tjek prompt</button>
-  <div id="result" style="margin-top:20px;"></div>
+  <div id="result" style="margin-top:20px; font-size:1.1em;"></div>
 
-  <script src="./playground.js"></script>
+  <h3 style="margin-top:40px;">💡 Forslået idéer (anonymt)</h3>
+  <ul id="ideasList"></ul>
+
+  <textarea id="ideaInput" rows="2" placeholder="Foreslå en idé..." style="width:100%; margin-top:10px;"></textarea>
+  <button id="submitIdea" style="margin-top:6px;">Tilføj idé</button>
+
+  <script src="./playground.js?v=1"></script>
 </body>
 </html>

@@ -13,15 +13,41 @@ function classify(text) {
   return "unknown";
 }
 
-document.getElementById('checkButton').addEventListener('click', () => {
-  const prompt = document.getElementById('promptInput').value;
-  const status = classify(prompt);
+document.addEventListener("DOMContentLoaded", () => {
+  const ideas = JSON.parse(localStorage.getItem("aiamigo_ideas") || "[]");
 
-  let output = "";
-  if (status === "red") output = "❌ Følsomt indhold (høj risiko)";
-  else if (status === "yellow") output = "⚠️ Vær opmærksom (medium risiko)";
-  else if (status === "green") output = "✅ OK (ingen risiko)";
-  else output = "⚠️ Ukendt (kan ikke klassificeres)";
+  function renderIdeas() {
+    const list = document.getElementById("ideasList");
+    list.innerHTML = "";
+    ideas.forEach((idea, i) => {
+      const li = document.createElement("li");
+      li.textContent = idea;
+      list.appendChild(li);
+    });
+  }
 
-  document.getElementById('result').innerHTML = `<strong>${output}</strong>`;
+  renderIdeas();
+
+  document.getElementById('checkButton').addEventListener('click', () => {
+    const prompt = document.getElementById('promptInput').value;
+    const status = classify(prompt);
+
+    let output = "";
+    if (status === "red") output = "❌ Følsomt indhold (høj risiko)";
+    else if (status === "yellow") output = "⚠️ Vær opmærksom (middel risiko)";
+    else if (status === "green") output = "✅ OK (ingen risiko)";
+    else output = "⚠️ Ukendt (kan ikke klassificeres)";
+
+    document.getElementById('result').innerHTML = `<strong>${output}</strong>`;
+  });
+
+  document.getElementById("submitIdea").addEventListener("click", () => {
+    const idea = document.getElementById("ideaInput").value.trim();
+    if (idea.length > 2) {
+      ideas.push(idea);
+      localStorage.setItem("aiamigo_ideas", JSON.stringify(ideas));
+      document.getElementById("ideaInput").value = "";
+      renderIdeas();
+    }
+  });
 });
