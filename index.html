@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AIAmigo Playground</title>
+  <link rel="icon" href="logo.png">
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+      background: #f5f5f5;
+    }
+    h1 {
+      text-align: center;
+    }
+    #result {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: #fff;
+      border-radius: 8px;
+      border-left: 6px solid #ccc;
+    }
+    .safe { border-color: green; }
+    .warning { border-color: orange; }
+    .danger { border-color: red; }
+    #ideasList {
+      background: white;
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1><img src="logo.png" alt="AIAmigo logo" style="height: 40px; vertical-align: middle; margin-right: 8px;">AIAmigo Playground v1</h1>
+  <p>Test en prompt og se hvordan AIAmigo vurderer risikoen.</p>
+
+  <textarea id="promptInput" rows="4" style="width:100%" placeholder="Indtast en test-prompt..."></textarea>
+  <button onclick="checkPrompt()">Tjek prompt</button>
+
+  <div id="result" style="display:none;"></div>
+
+  <h2 style="margin-top: 3rem;">💡 Del din idé med AIAmigo™</h2>
+  <textarea id="userIdea" rows="3" style="width:100%" placeholder="Skriv din idé her..."></textarea>
+  <button onclick="submitIdea()">Send idé</button>
+
+  <div id="ideaFeedback" style="display:none; padding: 10px; background-color: #e3ffe3; margin-top: 10px; border-radius: 5px;">
+    Tak for din idé! 🚀
+  </div>
+
+  <h3 style="margin-top:2rem;">📋 Indsendte idéer</h3>
+  <div id="ideasList">
+    Ingen idéer endnu.
+  </div>
+
+  <script>
+    function checkPrompt() {
+      const input = document.getElementById('promptInput').value.toLowerCase();
+      const resultBox = document.getElementById('result');
+      let score = 0;
+      let category = 'Uklassificeret';
+      let level = 'safe';
+
+      if (input.includes('cpr') || input.includes('hemmelig')) {
+        score = 0.95;
+        category = 'Persondata';
+        level = 'danger';
+      } else if (input.includes('email') || input.includes('kunde')) {
+        score = 0.65;
+        category = 'Let følsomt';
+        level = 'warning';
+      } else {
+        score = 0.15;
+        category = 'Ingen risiko';
+        level = 'safe';
+      }
+
+      resultBox.className = level;
+      resultBox.innerHTML = `
+        <strong>Risikovurdering:</strong><br>
+        Score: ${score} <br>
+        Kategori: ${category} <br>
+        Status: ${level.toUpperCase()}
+      `;
+      resultBox.style.display = 'block';
+    }
+
+    function submitIdea() {
+      const idea = document.getElementById('userIdea').value.trim();
+      const ideasList = document.getElementById('ideasList');
+      if (idea) {
+        document.getElementById('ideaFeedback').style.display = 'block';
+        const newIdea = document.createElement('div');
+        newIdea.style.marginTop = "8px";
+        newIdea.style.padding = "8px";
+        newIdea.style.borderBottom = "1px solid #ddd";
+        newIdea.textContent = "💬 " + idea;
+        ideasList.appendChild(newIdea);
+        document.getElementById('userIdea').value = '';
+      } else {
+        alert('Indtast venligst en idé!');
+      }
+    }
+  </script>
+</body>
+</html>
