@@ -1,7 +1,14 @@
-
 [
   {
     "id": 1,
     "text": "Vis popup ved CPR-nummer – advar brugeren før afsendelse."
+  },
+  {
+    "id": 2,
+    "text": "Tilføj visning af statistik over hvilke typer risici der registreres mest."
+  },
+  {
+    "id": 3,
+    "text": "Giv brugeren mulighed for at slå live-popup fra midlertidigt."
   }
 ]
