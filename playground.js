@@ -14,19 +14,20 @@ function classify(text) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const ideas = JSON.parse(localStorage.getItem("aiamigo_ideas") || "[]");
-
-  function renderIdeas() {
-    const list = document.getElementById("ideasList");
-    list.innerHTML = "";
-    ideas.forEach((idea, i) => {
-      const li = document.createElement("li");
-      li.textContent = idea;
-      list.appendChild(li);
+  const ideasURL = "https://jatom-tech.github.io/AIAmigo-playground/ideas.json";
+  fetch(ideasURL)
+    .then(res => res.json())
+    .then(ideas => {
+      const list = document.getElementById("ideasList");
+      ideas.forEach(idea => {
+        const li = document.createElement("li");
+        li.textContent = idea.text;
+        list.appendChild(li);
+      });
+    })
+    .catch(() => {
+      document.getElementById("ideasList").innerHTML = "<li>(Ingen idéer tilgængelige)</li>";
     });
-  }
-
-  renderIdeas();
 
   document.getElementById('checkButton').addEventListener('click', () => {
     const prompt = document.getElementById('promptInput').value;
@@ -39,15 +40,5 @@ document.addEventListener("DOMContentLoaded", () => {
     else output = "⚠️ Ukendt (kan ikke klassificeres)";
 
     document.getElementById('result').innerHTML = `<strong>${output}</strong>`;
-  });
-
-  document.getElementById("submitIdea").addEventListener("click", () => {
-    const idea = document.getElementById("ideaInput").value.trim();
-    if (idea.length > 2) {
-      ideas.push(idea);
-      localStorage.setItem("aiamigo_ideas", JSON.stringify(ideas));
-      document.getElementById("ideaInput").value = "";
-      renderIdeas();
-    }
   });
 });
